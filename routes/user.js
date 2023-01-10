@@ -1,13 +1,14 @@
 const express = require('express');
-const {authenticateWithClaims} = require('../middleware/auth');
 const router = express.Router();
+const {authenticateWithClaims} = require('../middleware/auth');
 
-const bookModels = require('../models/book');
+const bookController = require('../controllers/book')
+const userController = require('../controllers/user');
 
 // GET route to get user info
-router.get('/self',authenticateWithClaims("User"),async (req, res, next) => {
+router.get('/self',authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const result = await req.models.user.findByEmail(req.user.email);
+        const result = await userController.findUserByEmail(req.user.email);
 
         // check for errors
         if (result.error == undefined) {
@@ -25,7 +26,7 @@ router.get('/self',authenticateWithClaims("User"),async (req, res, next) => {
 // GET route to show all books in library
 router.get('/all', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const allBooks = await bookModels.getAllBooks();
+        const allBooks = await bookController.getAllBooks();
 
         // check for errors
         if (allBooks.error == undefined || allBooks.error == null) {
@@ -44,7 +45,7 @@ router.get('/all', authenticateWithClaims("User"), async (req, res, next) => {
 // POST route to add a book to library
 router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const addBook = await bookModels.addNewBook(req.body.title,req.body.author,req.body.inShelf);
+        const addBook = await bookController.addNewBook(req.body.title,req.body.author,req.body.inShelf);
 
         // check for errors
         if (addBook.error == undefined || addBook.error == null) {
@@ -63,11 +64,11 @@ router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
 // DELETE route to delete a book from library
 router.delete('/delete', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const deleteBook = await bookModels.deleteBook(req.body.title,req.body.author);
+        const deleteBook = await bookController.deleteBook(req.body.title,req.body.author);
 
         // check for error 
         if (deleteBook.error == undefined || deleteBook.error == null) {
-            res.status(204).json("Book Deleted from Library");
+            res.status(204).json("Book deleted from library");
         } else {
             res.status(deleteBook.code).json(deleteBook.error);
         }
@@ -81,7 +82,7 @@ router.delete('/delete', authenticateWithClaims("User"), async (req, res, next) 
 // GET route to search for a book in library by title
 router.get('/byTitle', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const byTitle = await bookModels.searchByTitle(req.body.title);
+        const byTitle = await bookController.searchByTitle(req.body.title);
 
         // check for error
         if (byTitle.error == undefined || byTitle.error == null) {
@@ -99,7 +100,7 @@ router.get('/byTitle', authenticateWithClaims("User"), async (req, res, next) =>
 // GET route to search for a book in library by author
 router.get('/byAuthor', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const byAuthor = await bookModels.searchByAuthor(req.body.author);
+        const byAuthor = await bookController.searchByAuthor(req.body.author);
 
         // check for error
         if (byAuthor.error == undefined || byAuthor.error == null) {
@@ -117,7 +118,7 @@ router.get('/byAuthor', authenticateWithClaims("User"), async (req, res, next) =
 // GET route that shows all books on shelf
 router.get('/onShelf', authenticateWithClaims("User"), async (req, res, next) => {
     try {
-        const onShelf = await bookModels.checkShelves();
+        const onShelf = await bookController.checkShelves();
 
         // check for errors
         if (onShelf.error == undefined || onShelf.error == null) {
@@ -136,7 +137,7 @@ router.get('/onShelf', authenticateWithClaims("User"), async (req, res, next) =>
 // GET route for getting all books on wish list
 router.get('/wishList', async (req, res, next) => {
     try {
-        const wishList = await bookModels.getWishList();
+        const wishList = await bookController.getWishList();
 
         // check for errors
         if (wishList.error == undefined || wishList.error == null) {
