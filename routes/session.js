@@ -1,15 +1,18 @@
-const sessionModel = require('../models/session.js');
 const express = require('express');
 const router = express.Router();
+const {authenticateWithClaims} = require('../middleware/auth');
+
+const sessionController = require('../controllers/session');
+const userController = require('../controllers/user')
 
 // POST route to create new user account
 router.post('/', async (req, res, next) => {
     try {
-        const result = await req.models.user.createNewUser(req.body.firstName,req.body.lastName,req.body.email,req.body.password);
+        const result = await userController.createNewUser(req.body.firstName,req.body.lastName,req.body.email,req.body.password);
 
         // check if result was successful or not
         if (result.error == undefined) {
-            res.status(201).json(result);
+            res.status(201).json("Account created!");
         } else {
             res.status(result.code).json(result.error);
         }
@@ -23,11 +26,11 @@ router.post('/', async (req, res, next) => {
 // GET route to verify is user credentials are valid
 router.get('/', async (req, res, next) => {
     try {
-        const result = await req.models.user.authenticateUser(req.body.email,req.body.password);
+        const result = await sessionController.authenticateUser(req.body.email,req.body.password);
 
         // check if result was successful or not
         if (result.error == undefined) {
-            const token = await sessionModel.createAuthToken(req.body.email,"User");
+            const token = await sessionController.createAuthToken(req.body.email,"User");
 
             // check if token was created successfully
             if (token.error == undefined) {
@@ -43,6 +46,25 @@ router.get('/', async (req, res, next) => {
     }
 
     next();
+});
+
+
+// DELETE route to delete user account
+router.delete('/', authenticateWithClaims("User"), async (req, res, next) => {
+    try {
+        const result = await userController.deleteUser(req.user.email);
+
+        // check for errors
+        if (result.error == undefined) {
+            res.status(200).json("Account deleted!");
+        } else {
+            res.status(result.code).json(result.error);
+        }
+    } catch (err) {
+        res.status(500).json(err.toString());
+    }
+
+    next()
 });
 
 module.exports = router;
