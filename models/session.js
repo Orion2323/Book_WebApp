@@ -24,7 +24,7 @@ const createAuthToken = async (email, role) => {
     }
 
     console.log("Creating token...")
-    const token = jwt.sign({...ifExists[0], claimns: ["User"]}, accessTokenSecret);
+    const token = jwt.sign({...ifExists[0], claims: ["User"]}, accessTokenSecret);
     return token;
 }
 
