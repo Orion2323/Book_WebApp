@@ -14,7 +14,7 @@ router.post('/', async (req, res, next) => {
             res.status(result.code).json(result.error);
         }
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.toString());
     } 
 
     next();
@@ -39,7 +39,7 @@ router.get('/', async (req, res, next) => {
             res.status(result.code).json(result.error);
         }
     } catch (err) {
-        res.status(500).json(err);
+        res.status(500).json(err.toString());
     }
 
     next();
