@@ -5,6 +5,25 @@ const {authenticateWithClaims} = require('../middleware/auth');
 const bookController = require('../controllers/book')
 const userController = require('../controllers/user');
 
+// POST route to add a book to library
+router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
+    try {
+        const addBook = await bookController.addNewBook(req.body.title,req.body.author,req.body.inShelf);
+
+        // check for errors
+        if (addBook.error == undefined || addBook.error == null) {
+            res.status(204).json("Book Added to Library");
+        } else {
+            res.status(addBook.code).json(addBook.error);
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err.toString());
+    }
+
+    next();
+});
+
 // GET route to get user info
 router.get('/self',authenticateWithClaims("User"), async (req, res, next) => {
     try {
@@ -36,43 +55,6 @@ router.get('/all', authenticateWithClaims("User"), async (req, res, next) => {
         }
     } catch (err) {
         console.log(err);
-        res.status(500).json(err.toString());
-    }
-
-    next();
-});
-
-// POST route to add a book to library
-router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
-    try {
-        const addBook = await bookController.addNewBook(req.body.title,req.body.author,req.body.inShelf);
-
-        // check for errors
-        if (addBook.error == undefined || addBook.error == null) {
-            res.status(204).json("Book Added to Library");
-        } else {
-            res.status(addBook.code).json(addBook.error);
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json(err.toString());
-    }
-
-    next();
-});
-
-// DELETE route to delete a book from library
-router.delete('/delete', authenticateWithClaims("User"), async (req, res, next) => {
-    try {
-        const deleteBook = await bookController.deleteBook(req.body.title,req.body.author);
-
-        // check for error 
-        if (deleteBook.error == undefined || deleteBook.error == null) {
-            res.status(204).json("Book deleted from library");
-        } else {
-            res.status(deleteBook.code).json(deleteBook.error);
-        }
-    } catch (err) {
         res.status(500).json(err.toString());
     }
 
@@ -148,6 +130,24 @@ router.get('/wishList', async (req, res, next) => {
     } catch (err) {
         res.status(500).json(err.toString());
     }
+    next();
+});
+
+// DELETE route to delete a book from library
+router.delete('/delete', authenticateWithClaims("User"), async (req, res, next) => {
+    try {
+        const deleteBook = await bookController.deleteBook(req.body.title,req.body.author);
+
+        // check for error 
+        if (deleteBook.error == undefined || deleteBook.error == null) {
+            res.status(204).json("Book deleted from library");
+        } else {
+            res.status(deleteBook.code).json(deleteBook.error);
+        }
+    } catch (err) {
+        res.status(500).json(err.toString());
+    }
+
     next();
 });
 
