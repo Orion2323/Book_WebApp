@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // Import route handlers
-const userRoutes = require('./routes/user');
 const sessionRoutes = require('./routes/session');
+const userRoutes = require('./routes/user');
 
 // Import middleware
 const {createMiddleware} = require('./middleware/model-middleware.js');
