@@ -5,25 +5,6 @@ const {authenticateWithClaims} = require('../middleware/auth');
 const bookController = require('../controllers/book')
 const userController = require('../controllers/user');
 
-// POST route to add a book to library
-router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
-    try {
-        const addBook = await bookController.addNewBook(req.body.title,req.body.author,req.body.inShelf);
-
-        // check for errors
-        if (addBook.error == undefined || addBook.error == null) {
-            res.status(204).json("Book Added to Library");
-        } else {
-            res.status(addBook.code).json(addBook.error);
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json(err.toString());
-    }
-
-    next();
-});
-
 // GET route to get user info
 router.get('/self',authenticateWithClaims("User"), async (req, res, next) => {
     try {
@@ -130,6 +111,25 @@ router.get('/wishList', async (req, res, next) => {
     } catch (err) {
         res.status(500).json(err.toString());
     }
+    next();
+});
+
+// POST route to add a book to library
+router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
+    try {
+        const addBook = await bookController.addNewBook(req.body.title,req.body.author,req.body.inShelf);
+
+        // check for errors
+        if (addBook.error == undefined || addBook.error == null) {
+            res.status(204).json("Book Added to Library");
+        } else {
+            res.status(addBook.code).json(addBook.error);
+        }
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err.toString());
+    }
+
     next();
 });
 
