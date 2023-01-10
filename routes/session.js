@@ -5,24 +5,6 @@ const {authenticateWithClaims} = require('../middleware/auth');
 const sessionController = require('../controllers/session');
 const userController = require('../controllers/user')
 
-// POST route to create new user account
-router.post('/', async (req, res, next) => {
-    try {
-        const result = await userController.createNewUser(req.body.firstName,req.body.lastName,req.body.email,req.body.password);
-
-        // check if result was successful or not
-        if (result.error == undefined) {
-            res.status(201).json("Account created!");
-        } else {
-            res.status(result.code).json(result.error);
-        }
-    } catch (err) {
-        res.status(500).json(err.toString());
-    } 
-
-    next();
-});
-
 // GET route to verify is user credentials are valid
 router.get('/', async (req, res, next) => {
     try {
@@ -48,6 +30,23 @@ router.get('/', async (req, res, next) => {
     next();
 });
 
+// POST route to create new user account
+router.post('/', async (req, res, next) => {
+    try {
+        const result = await userController.createNewUser(req.body.firstName,req.body.lastName,req.body.email,req.body.password);
+
+        // check if result was successful or not
+        if (result.error == undefined) {
+            res.status(201).json("Account created!");
+        } else {
+            res.status(result.code).json(result.error);
+        }
+    } catch (err) {
+        res.status(500).json(err.toString());
+    } 
+
+    next();
+});
 
 // DELETE route to delete user account
 router.delete('/', authenticateWithClaims("User"), async (req, res, next) => {
