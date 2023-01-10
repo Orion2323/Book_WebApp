@@ -101,7 +101,6 @@ const findUserByEmail = async (email) => {
     }
 }
 
-
 module.exports = {
     createNewUser,
     deleteUser,
