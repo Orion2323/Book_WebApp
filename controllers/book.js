@@ -170,5 +170,4 @@ module.exports = {
     searchByAuthor,
     checkShelves,
     getWishList,
-
 }
