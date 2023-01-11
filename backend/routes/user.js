@@ -121,7 +121,7 @@ router.post('/add', authenticateWithClaims("User"), async (req, res, next) => {
 
         // check for errors
         if (addBook.error == undefined || addBook.error == null) {
-            res.status(204).json("Book Added to Library");
+            res.status(204).json("Book added to Library");
         } else {
             res.status(addBook.code).json(addBook.error);
         }
